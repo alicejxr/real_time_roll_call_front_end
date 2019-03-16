@@ -1,17 +1,17 @@
-import { LOAD_STUDENTS } from "../actionTypes";
+import { LOAD_STUDENTS } from '../actionTypes'
 
 const initialState = {
-  name: 'pororo',
-};
+  name: 'pororo'
+}
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case LOAD_STUDENTS: {
       return {
-        ...state,
-      };
+        ...state
+      }
     }
     default:
-      return state;
+      return state
   }
 }

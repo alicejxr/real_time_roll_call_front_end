@@ -1,0 +1,21 @@
+.Tags {
+  display: flex;
+  border-bottom: 1px solid #EBEBEB;
+}
+
+.tag {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #8590a6;
+  background-color: #ffffff;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.tag--selected {
+  border-bottom: 1px solid #0284ff;
+  background-color:#F6F6F6;
+}

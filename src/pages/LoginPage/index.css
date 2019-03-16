@@ -1,0 +1,62 @@
+.LoginPage {
+  width: 100vw;
+  height: calc(100vh - 60px);
+  background-image: url('../../img/loginBanner.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.Login-content {
+  position: absolute;
+  top: 60%;
+  left: 10%;
+  width: 350px;
+  height: 270px;
+  transform: translateY(-70%);
+  background: #FFFFFF;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(26, 26, 26, 0.1);
+}
+
+.Login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.Login-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.Login-item-name {
+  font-weight: 400;
+  font-size: 14px;
+  color: #999;
+  margin-right: 15px;
+}
+
+.Login-item-input {
+  padding: 0;
+  overflow: hidden;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  background: transparent;
+  border: 1px solid #EBEBEB;
+  border-radius: 4px;
+  width: 200px;
+  height: 25px;
+  resize: none;
+  padding: 5px;
+}
+
+.Login-button {
+  margin-top: 15px;
+  height: 35px;
+  width: 260px;
+}

@@ -1,0 +1,22 @@
+.Button {
+  display: inline-block;
+  padding: 0 16px;
+  font-size: 14px;
+  line-height: 32px;
+  text-align: center;
+  cursor: pointer;
+  background: none;
+  border: 1px solid;
+  border-radius: 3px;
+  color: #FFFFFF;
+  background-color: #0084FF;
+}
+
+.Button--disabled {
+  background-color: #0084ff4d;
+}
+
+.Button--cancel {
+  color: #8590A6;
+  background-color:  #FFFFFF;
+}

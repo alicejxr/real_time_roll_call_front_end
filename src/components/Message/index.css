@@ -1,0 +1,25 @@
+@keyframes fade {
+  0% { opacity: 0 }
+  100% { opacity: 1 }
+}
+
+.Message-wrapper {
+  position: fixed;
+  left: 50%;
+  top: 80px;
+  transform: translateX(-50%);
+  padding: 10px;
+  height: 30px;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(26, 26, 26, 0.01);
+  box-shadow: 0 1px 3px rgba(26, 26, 26, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  animation: fade .5s linear;
+}
+
+.Message-text {
+  margin-left: 10px;
+}

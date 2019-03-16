@@ -1,17 +1,21 @@
-import { LOAD_STUDENTS } from "../actionTypes";
+import { LOGIN_SUCCESS, LOGOUT } from '../actionTypes'
 
-const initialState = {
-  name: 'pororo',
-};
+const initialState = {}
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
-    case LOAD_STUDENTS: {
+    case LOGIN_SUCCESS: {
       return {
         ...state,
-      };
+        ...action.payload
+      }
     }
+
+    case LOGOUT: {
+      return state
+    }
+
     default:
-      return state;
+      return state
   }
 }

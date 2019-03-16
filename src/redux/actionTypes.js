@@ -1,1 +1,7 @@
-export const LOAD_STUDENTS = "LOAD_STUDENTS";
+export const LOAD_STUDENTS = 'LOAD_STUDENTS'
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
+export const LOGOUT = 'LOGOUT'
+export const SHOW_MESSAGE = 'SHOW_MESSAGE'
+export const HIDE_MESSAGE = 'HIDE_MESSAGE'
+export const SHOW_MODAL = 'SHOW_MODAL'
+export const HIDE_MODAL = 'HIDE_MODAL'
