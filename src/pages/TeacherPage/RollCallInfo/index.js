@@ -60,7 +60,6 @@ class RollCallInfoPage extends Component {
       date,
       class_id: classId
     }
-    console.log(body)
   }
 
   render () {

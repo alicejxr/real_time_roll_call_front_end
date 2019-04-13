@@ -1,12 +1,5 @@
 language: node_js
-node_js:
-  - 8
-  - 10
-cache:
-  directories:
-    - node_modules
+node_js: node
+cache: npm
 script:
-  - npm run test
   - npm run build
-on:
-  branch: master
