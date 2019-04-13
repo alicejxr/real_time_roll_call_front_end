@@ -1,4 +1,4 @@
-.FaceAuto {
+.RollCall {
   display: flex;
   flex-direction: column;
   margin: 15px 15px 15px 0;
@@ -10,7 +10,7 @@
   box-shadow: 0 1px 3px rgba(26, 26, 26, 0.1);
 }
 
-.FaceAuto-title{
+.RollCall-title{
   width: 145px;
   font-size: 24px;
   color: #202124;
@@ -18,21 +18,24 @@
   margin-left: 40px;
 }
 
-.FaceAuto-subtitle{
+.RollCall-subtitle{
   color: #5f6368;
   margin: 15px 0 0 40px;
   font-size: 14px;
 }
 
-.FaceAuto-content {
+.RollCall-select {
+  margin: 30px auto;
+}
+
+.RollCall-content {
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  margin-top: 60px;
 }
 
-.FaceAuto-video {
+.RollCall-video {
   width: 480px;
   height: 320px;
   border-radius: 2px;
@@ -41,7 +44,7 @@
   margin: 10px;
 }
 
-.FaceAuto-canvas {
+.RollCall-canvas {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -49,29 +52,45 @@
   border-radius: 2px;
 }
 
-.FaceAuto-button {
+.RollCall-button {
   margin: 30px auto;
   width: 40%;
 }
 
-.FaceAuto-modal {
+.RollCall-picture {
+  height: 0;
+}
+
+.RollCall-form {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 15px;
+  margin-top: 20px;
 }
 
-.FaceAuto-ModalTitle {
-  font-size: 18px;
-  margin: 15px;
+.RollCall-formName {
+  font-weight: 400;
+  font-size: 14px;
+  color: #999;
+  margin-right: 15px;
 }
 
-.FaceAuto-picture {
-  margin: 15px;
+.RollCall-formInput {
+  padding: 0;
+  overflow: hidden;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  background: transparent;
+  border: 1px solid #EBEBEB;
+  border-radius: 4px;
+  width: 200px;
+  height: 25px;
+  resize: none;
+  padding: 5px;
 }
 
-.FaceAuto-modalButton {
-  width: 90%;
-  margin-top: 15px;
+.RollCall-formInput::-webkit-inner-spin-button {
+	-webkit-appearance: none !important;
+	margin: 0;
 }

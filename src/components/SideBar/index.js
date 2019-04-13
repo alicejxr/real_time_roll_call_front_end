@@ -24,6 +24,7 @@ class SideBar extends Component {
       this.setState({
         currentTag
       })
+      window.location.reload()
     }
   }
 

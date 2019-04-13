@@ -1,0 +1,27 @@
+.Mask {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  opacity: .4;
+  background-color:#1a1a1a;
+  cursor: pointer;
+}
+
+.Mask--hidden {
+  opacity: 0;
+}
+
+.Mask-children--hidden {
+  opacity: 0;
+}
+
+.Mask-children {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+}

@@ -1,0 +1,97 @@
+.RollCallInfo {
+  margin: 15px 15px 15px 0;
+  padding-top: 30px;
+  width: calc(100vw - 250px);
+  min-height: 100vh;
+  background: #FFFFFF;
+  border: 1px solid #EBEBEB;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(26, 26, 26, 0.1);
+}
+
+.RollCallInfo-title {
+  font-size: 24px;
+  color: #202124;
+  margin-left: 40px;
+  border-bottom: 4px solid #0284ff;
+}
+
+.RollCallInfo-Table-header {
+  margin: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.RollCallInfo-Table-header .rc-select-focused .rc-select-selection {
+  border-color: #0284ff;
+  box-shadow: 0 0 2px rgba(2, 132, 255, 0.8);
+}
+
+.RollCallInfo-Table-header .rc-select-enabled .rc-select-selection:hover {
+  border-color: #0284ff;
+  box-shadow: 0 0 2px rgba(2, 132, 255, 0.8);
+}
+
+.RollCallInfo-Table-header .rc-select-enabled .rc-select-selection:active {
+  border-color: #0284ff;
+}
+
+.RollCallInfo-Table-header .rc-select-selection__placeholder {
+  color: #777;
+}
+
+.RollCallInfo-Calendar-wrapper {
+  position: relative;
+  height: 30px;
+  width: 200px;
+  margin-left: 30px;
+}
+
+.RollCallInfo-Calendar-input {
+  cursor: pointer;
+  position: absolute;
+  box-sizing: border-box;
+  top: 0;
+  left: 0;
+  border: #d9d9d9 1px solid;
+  border-radius: 5px;
+  height: 30px;
+  padding-left: 10px;
+}
+
+.RollCallInfo-Calendar-input:hover {
+  border: #0284ff 1px solid;
+}
+
+.RollCallInfo-Calendar {
+  width: 352px;
+  position: absolute;
+  top: 30px;
+  left: 0;
+}
+
+.RollCallInfo-Calendar--hidden {
+  display: none;
+}
+
+.RollCallInfo-Class-input {
+  box-sizing: border-box;
+  border: #d9d9d9 1px solid;
+  border-radius: 5px;
+  height: 30px;
+  padding-left: 10px;
+}
+
+.RollCallInfo-Class-input::-webkit-inner-spin-button {
+	-webkit-appearance: none !important;
+	margin: 0;
+}
+
+.RollCallInfo-button {
+  border-radius: 6px;
+  margin-left: 20px;
+}
+
+.RollCallInfo-table {
+  margin: 40px;
+}

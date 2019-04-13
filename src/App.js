@@ -3,11 +3,10 @@ import PropTypes from 'prop-types'
 import { Route, Switch, withRouter } from 'react-router-dom'
 import { fetch } from 'whatwg-fetch'
 import { connect } from 'react-redux'
-import { saveUserInfo, showMessage } from './redux/actions'
+import { saveUserInfo, showMessage, logout } from './redux/actions'
 import Header from './components/Header'
 import Message from './components/Message'
 import LoginePage from './pages/LoginPage'
-import RollCallPage from './pages/RollCallPage'
 import StudentPage from './pages/StudentPage'
 import TeacherPage from './pages/TeacherPage'
 
@@ -31,9 +30,9 @@ class App extends Component {
 
     if (window.localStorage.getItem('isLogin') === 'true') {
       const user = JSON.parse(window.localStorage.getItem('user'))
-      const { id, token } = user
+      const { id, token, role } = user
 
-      fetch(`${root}/verify/${id}`, {
+      fetch(`${root}/verify/${id}/${role}`, {
         method: 'GET',
         headers: {
           'Authorization': 'Bearer ' + token
@@ -41,9 +40,19 @@ class App extends Component {
       }).then(
         res => res.json()
       ).then(
-        res => this.props.dispatch(saveUserInfo(res))
+        res => {
+          this.props.dispatch(saveUserInfo(res))
+          if (window.location.pathname === '/') {
+            this.props.history.push(`/${role}`)
+          }
+        }
       ).catch(() => {
         this.props.dispatch(showMessage({ status: 'failure', message: '登录过期请重新登录！' }))
+        window.localStorage.removeItem('user')
+        window.localStorage.setItem('isLogin', false)
+        this.props.dispatch(logout())
+        this.handleLoginStatus(false)
+        this.props.history.push('/login')
       })
     } else {
       this.props.history.push('/login')
@@ -65,7 +74,6 @@ class App extends Component {
         { isShown && <Message />}
         <Switch>
           <Route path='/login' render={props => <LoginePage {...props} handleLoginStatus={this.handleLoginStatus} isLogin={isLogin} />} />
-          <Route path='/roll-call' component={RollCallPage} />
           <Route path='/student' component={StudentPage} />
           <Route path='/teacher' component={TeacherPage} />
         </Switch>

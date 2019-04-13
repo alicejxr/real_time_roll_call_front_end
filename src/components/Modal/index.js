@@ -1,52 +1,41 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
-import { connect } from 'react-redux'
+import cx from 'classnames'
 import Close from '../../svg/close.svg'
 
 import './index.css'
 
-class LoginModal extends Component {
-    state = {
-      currentRole: 'student',
-      id: '',
-      password: ''
-    }
+class Modal extends Component {
+  componentDidMount () {
+    this.props.componentDidMount()
+  }
 
   handleCloseModal = () => {
     const { closeModal } = this.props
-    closeModal(false)
+    closeModal()
   }
 
   render () {
-    const { isOpen } = this.props
-
-    return isOpen ? ReactDOM.createPortal(<div className='login-modal'>
-      <div className='login-mask' onClick={this.handleCloseModal} />
-      <div className='login-content'>
-        <Close className='login-closebutton' onClick={this.handleCloseModal} />
-        {
-          this.props.children
-        }
-      </div>
-    </div>, document.body) : null
+    const { className } = this.props
+    return ReactDOM.createPortal(
+      <div className='Modal'>
+        <div className='Modal-mask' onClick={this.handleCloseModal} />
+        <div className={cx('Modal-content', className)}>
+          <Close className='Modal-closebutton' onClick={this.handleCloseModal} />
+          {
+            this.props.children
+          }
+        </div>
+      </div>, document.body)
   }
 }
 
-LoginModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
+Modal.propTypes = {
+  className: PropTypes.string,
   closeModal: PropTypes.func.isRequired,
-  // dispatch: PropTypes.func,
+  componentDidMount: PropTypes.func,
   children: PropTypes.node
 }
 
-LoginModal.defaultProps = {
-  isOpen: true
-}
-
-const mapStateToProps = state => {
-  const { students } = state
-  return { students }
-}
-
-export default connect(mapStateToProps)(LoginModal)
+export default Modal

@@ -4,17 +4,19 @@ import PropTypes from 'prop-types'
 import * as faceapi from 'face-api.js'
 import { getFaceDetectorOptions, isFaceDetectionModelLoaded, changeFaceDetector, TINY_FACE_DETECTOR } from './js/faceDetectionControls'
 import { drawDetections } from './js/drawing'
-import { uploadFacePicture } from '../../../redux/actions'
+import { recognizeFace } from '../../../redux/actions'
 import Button from '../../../components/Button'
-import Modal from '../../../components/Modal'
+import Select, { Option } from 'rc-select'
 
 import './index.css'
+import 'rc-select/assets/index.css'
 
-class FaceAuto extends Component {
+class RollCall extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      shouldShowModal: false
+      studentId: '',
+      courseId: null
     }
     this.video = React.createRef()
     this.canvas = React.createRef()
@@ -108,7 +110,6 @@ class FaceAuto extends Component {
   }
 
   takePicture = () => {
-    this.showModal()
     const video = this.video.current
     const picture = this.picture.current
     const context = picture.getContext('2d')
@@ -116,59 +117,82 @@ class FaceAuto extends Component {
     context.drawImage(video, 0, 0, 360, 240)
   }
 
-  uploadPicture = () => {
+  recognizeFace = () => {
+    this.takePicture()
     const picture = this.picture.current
     const dataurl = picture.toDataURL('image/jpeg', 1.0)
-    this.props.dispatch(uploadFacePicture(dataurl)).then(res => {
-      if (res === 200) {
-        this.closeModal()
-      }
+    const { studentId, courseId } = this.state
+    const ids = {
+      studentId: Number(studentId),
+      courseId
+    }
+
+    this.props.dispatch(recognizeFace(dataurl, ids))
+  }
+
+  onSelectChange = (_, option) => {
+    this.setState({
+      courseId: option.key
     })
   }
 
-  closeModal = () => {
+  handleIdChange = e => {
     this.setState({
-      shouldShowModal: false
-    })
-  }
-
-  showModal = () => {
-    this.setState({
-      shouldShowModal: true
+      studentId: e.target.value
     })
   }
 
   render () {
-    const { shouldShowModal } = this.state
-    return (<div className='FaceAuto'>
-      <span className='FaceAuto-title'>
+    const { courses = [] } = this.props
+    const { studentId, courseId } = this.state
+    return (<div className='RollCall'>
+      <span className='RollCall-title'>
         人脸自动录入
       </span>
-      <span className='FaceAuto-subtitle'>
+      <span className='RollCall-subtitle'>
         请确保录入的人脸在下方录入区被识别以避免上传失败
       </span>
-      <div className='FaceAuto-content'>
-        <video className='FaceAuto-video' ref={this.video} onPlay={this.onPlay} autoPlay muted />
-        <canvas className='FaceAuto-canvas' ref={this.canvas} width='480' height='320' />
+      <Select
+        placeholder='开始前请选择相应课程'
+        className='RollCall-select'
+        style={{ width: 300 }}
+        animation='slide-up'
+        showSearch={false}
+        onChange={this.onSelectChange}
+      >
+        {
+          courses.map(item => {
+            const { co_id: coId, name } = item
+            return (
+              <Option key={coId} value={name}>{name}</Option>
+            )
+          })
+        }
+      </Select>
+      <div className='RollCall-content'>
+        <video className='RollCall-video' ref={this.video} onPlay={this.onPlay} autoPlay muted />
+        <canvas className='RollCall-canvas' ref={this.canvas} width='480' height='320' />
       </div>
-      <Button className='FaceAuto-button' handleClick={this.showModal} value='拍照' />
-      {
-        shouldShowModal &&
-        <Modal closeModal={this.closeModal} componentDidMount={this.takePicture} className='FaceAuto-modal'>
-          <div className='FaceAuto-ModalTitle'>
-            确认使用这张图片吗?
-          </div>
-          <canvas className='FaceAuto-picture' ref={this.picture} width='360' height='240' />
-          <Button className='FaceAuto-modalButton' value='确认' handleClick={this.uploadPicture} />
-          <Button type='cancel' className='FaceAuto-modalButton' handleClick={this.closeModal} value='取消' />
-        </Modal>
-      }
+      <label className='RollCall-form'>
+        <span className='RollCall-formName'>学号:</span>
+        <input className='RollCall-formInput' type='text' value={studentId} onChange={this.handleIdChange} />
+        <canvas className='RollCall-picture' ref={this.picture} width='360' height='240' />
+      </label>
+      <Button className='RollCall-button' handleClick={this.recognizeFace} value='拍照' disabled={!studentId || !courseId} />
     </div>)
   }
 }
 
-FaceAuto.propTypes = {
+RollCall.propTypes = {
+  courses: PropTypes.array,
   dispatch: PropTypes.func
 }
 
-export default connect()(FaceAuto)
+const mapStateToState = state => {
+  const { user } = state
+  return {
+    ...user
+  }
+}
+
+export default connect(mapStateToState)(RollCall)

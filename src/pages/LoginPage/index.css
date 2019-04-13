@@ -1,15 +1,15 @@
 .LoginPage {
   width: 100vw;
   height: calc(100vh - 60px);
-  background-image: url('../../img/loginBanner.png');
+  background-image: url('../../img/facial-recognition-banner.jpg');
   background-repeat: no-repeat;
   background-size: cover;
 }
 
 .Login-content {
   position: absolute;
-  top: 60%;
-  left: 10%;
+  top: 55%;
+  left: 15%;
   width: 350px;
   height: 270px;
   transform: translateY(-70%);

@@ -1,4 +1,4 @@
-.FaceInfo {
+.TeacherInfo {
   margin: 15px 15px 15px 0;
   padding-top: 30px;
   width: calc(100vw - 250px);
@@ -8,60 +8,51 @@
   box-shadow: 0 1px 3px rgba(26, 26, 26, 0.1);
 }
 
-.FaceInfo-title {
+.TeacherInfo-title {
   font-size: 24px;
   color: #202124;
   margin-left: 40px;
   border-bottom: 4px solid #0284ff;
 }
 
-.FaceInfo-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.TeacherInfo-content {
   padding-top: 80px;
   padding-right: 20px;
 }
 
-.FaceInfo-img {
-  overflow: hidden;
-  position: relative;
-}
-
-.FaceInfo-mask {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.FaceInfo-hoverTip {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #FFFFFF;
-}
-
-.Face-tip {
-  margin-top: 25px;
-}
-
-.FaceInfo-text{
+.TeacherInfo-text{
   display: flex;
   flex-direction: column;
   padding-left: 100px;
 }
 
-.Faceinfo-item {
+.TeacherInfo-item {
   width: 400px;
   height: 40px;
   margin: 15px;
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-around;
 }
 
-.FaceInfo-key {
+.TeacherInfo-key {
+  width: 80px;
   color: #5f6368;
   margin-right: 75px;
+  text-align: right;
+}
+
+.TeacherInfo-value {
+  width: 200px;
+  text-align: left;
+}
+
+.TeacherInfo-courses {
+  align-self: flex-start;
+  width: 200px;
+  text-align: left;
+}
+
+.TeacherInfo-course {
+  margin-top: 15px;
 }

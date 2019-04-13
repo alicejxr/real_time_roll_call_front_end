@@ -1,7 +1,8 @@
 import { fetch } from 'whatwg-fetch'
 import { LOGIN_SUCCESS, LOGOUT, SHOW_MESSAGE, HIDE_MESSAGE, SHOW_MODAL, HIDE_MODAL } from './actionTypes'
+import dataURL2File from '../utils/dataURL2File'
 
-const root = 'http://127.0.0.1:7001'
+const root = 'http://127.0.0.1:7002'
 
 export function saveUserInfo (info) {
   const { data } = info
@@ -76,5 +77,57 @@ export function showModal () {
 export function hideModal () {
   return {
     type: HIDE_MODAL
+  }
+}
+
+export function uploadFacePicture (dataurl) {
+  return dispatch => {
+    const user = JSON.parse(window.localStorage.getItem('user'))
+    const { id, token } = user
+    const file = dataURL2File(dataurl, `${id}.jpeg`)
+    // eslint-disable-next-line no-undef
+    const formData = new FormData()
+    formData.append('file', file)
+    return fetch(`${root}/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+      body: formData
+    }).then(res =>
+      res.json()
+    ).then(res => {
+      const { code, message, data } = res
+      if (code === 200) {
+        Promise.all([dispatch(saveUserInfo({ data })), dispatch(showMessage({ status: 'success', message }))])
+        return code
+      }
+    })
+  }
+}
+
+export function recognizeFace (dataurl, { studentId, courseId }) {
+  return dispatch => {
+    const user = JSON.parse(window.localStorage.getItem('user'))
+    const { id: teacherId, token } = user
+    const file = dataURL2File(dataurl, `${studentId}.jpeg`)
+    // eslint-disable-next-line no-undef
+    const formData = new FormData()
+    formData.append('course_id', courseId)
+    formData.append('file', file)
+    return fetch(`${root}/recognize/${teacherId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+      body: formData
+    }).then(res =>
+      res.json()
+    ).then(res => {
+      const { code, message } = res
+      if (code === 200) {
+        dispatch(showMessage({ status: 'success', message }))
+      }
+    })
   }
 }

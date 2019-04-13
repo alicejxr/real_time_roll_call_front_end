@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-// import PropTypes from 'prop-types'
-import { Route, Switch } from 'react-router-dom'
+import PropTypes from 'prop-types'
+import { Route, Switch, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import FaceAuto from './FaceAuto'
 import FaceInfo from './FaceInfo'
@@ -11,6 +11,14 @@ import Upload from '../../svg/upload.svg'
 import './index.css'
 
 class StudentPage extends Component {
+  componentDidMount () {
+    const user = JSON.parse(window.localStorage.getItem('user'))
+    const { role } = user
+    if (role !== 'student') {
+      this.props.history.push(`/${role === 'teacher' ? role : 'login'}`)
+    }
+  }
+
   render () {
     return (
       <div className='Student' onClick={this.handleClick}>
@@ -29,11 +37,13 @@ class StudentPage extends Component {
   }
 }
 
-StudentPage.propTypes = {}
+StudentPage.propTypes = {
+  history: PropTypes.object
+}
 
 const mapStateToProps = state => {
   const { students } = state
   return { students }
 }
 
-export default connect(mapStateToProps)(StudentPage)
+export default withRouter(connect(mapStateToProps)(StudentPage))

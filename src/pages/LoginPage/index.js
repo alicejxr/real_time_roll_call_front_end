@@ -41,15 +41,19 @@ class LoginPage extends Component {
   handleSubmit = () => {
     const { id, currentRole, password } = this.state
     const { handleLoginStatus } = this.props
-
     const body = {
       role: currentRole,
       id,
       password
     }
+
     this.props.dispatch(login(body)).then(() => {
-      handleLoginStatus(true)
-      this.props.history.push(`/${currentRole}`)
+      const { user } = this.props
+      const isLogin = user.name || false
+      if (isLogin) {
+        handleLoginStatus(true)
+        this.props.history.push(`/${currentRole}`)
+      }
     })
   }
 
@@ -83,9 +87,17 @@ class LoginPage extends Component {
 
 LoginPage.propTypes = {
   isLogin: PropTypes.bool.isRequired,
+  user: PropTypes.object,
   handleLoginStatus: PropTypes.func.isRequired,
   history: PropTypes.object,
   dispatch: PropTypes.func
 }
 
-export default withRouter(connect()(LoginPage))
+const mapStateToProps = (state) => {
+  const { user } = state
+  return {
+    user
+  }
+}
+
+export default withRouter(connect(mapStateToProps)(LoginPage))
