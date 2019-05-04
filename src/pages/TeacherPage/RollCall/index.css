@@ -24,8 +24,18 @@
   font-size: 14px;
 }
 
+.RollCall-selects {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.RollCall-selects .react-datepicker-popper{
+  z-index: 3;
+}
+
 .RollCall-select {
-  margin: 30px auto;
+  margin-right: 40px;
 }
 
 .RollCall-content {
@@ -90,7 +100,32 @@
   padding: 5px;
 }
 
+.RollCall-formInput:hover {
+  border: #0284ff 1px solid;
+  box-shadow: 0 0 2px rgba(2, 132, 255, 0.8);
+}
+
 .RollCall-formInput::-webkit-inner-spin-button {
 	-webkit-appearance: none !important;
 	margin: 0;
+}
+
+.RollCall .react-datepicker-wrapper input {
+  cursor: pointer;
+  border: #d9d9d9 1px solid;
+  border-radius: 5px;
+  width: 200px;
+  height: 24px;
+  padding-left: 10px;
+  margin: 40px auto;
+}
+
+.RollCall .react-datepicker-wrapper input::-webkit-inner-spin-button {
+	-webkit-appearance: none !important;
+	margin: 0;
+}
+
+.RollCall .react-datepicker-wrapper input:hover {
+  border: #0284ff 1px solid;
+  box-shadow: 0 0 2px rgba(2, 132, 255, 0.8);
 }

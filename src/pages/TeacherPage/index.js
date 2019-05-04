@@ -6,7 +6,9 @@ import SideBar from '../../components/SideBar'
 import Teacher from '../../svg/teacher.svg'
 import RollCallInfo from '../../svg/rollcall.svg'
 import Face from '../../svg/face.svg'
+import Student from '../../svg/student.svg'
 import TeacherInfoPage from './TeacherInfo'
+import StudentInfoPage from './StudentInfo'
 import RollCallInfoPage from './RollCallInfo'
 import RollCallPage from './RollCall'
 
@@ -27,12 +29,14 @@ class TeacherPage extends Component {
         <SideBar
           config={[
             { key: '/teacher', value: '教师信息', icon: Teacher },
+            { key: '/teacher/student', value: '管理学生信息', icon: Student },
             { key: '/teacher/rollcall', value: '课堂点名', icon: Face },
             { key: '/teacher/rollcall-info', value: '课堂点名信息', icon: RollCallInfo }
           ]}
         />
         <Switch>
           <Route path='/teacher' exact component={TeacherInfoPage} />
+          <Route path='/teacher/student' exact component={StudentInfoPage} />
           <Route path='/teacher/rollcall' component={RollCallPage} />
           <Route path='/teacher/rollcall-info' component={RollCallInfoPage} />
         </Switch>

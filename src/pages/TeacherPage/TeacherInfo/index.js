@@ -33,7 +33,7 @@ class TeacherInfoPage extends Component {
               <div className='TeacherInfo-courses'>
                 {
                   courses.map(course => {
-                    const { co_id: id, name } = course
+                    const { course_id: id, name } = course
                     return (
                       <p className='TeacherInfo-course' key={id}>{name}</p>
                     )

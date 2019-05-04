@@ -12,10 +12,10 @@ import './index.css'
 
 class StudentPage extends Component {
   componentDidMount () {
-    const user = JSON.parse(window.localStorage.getItem('user'))
+    const user = JSON.parse(window.localStorage.getItem('user')) || {}
     const { role } = user
-    if (role !== 'student') {
-      this.props.history.push(`/${role === 'teacher' ? role : 'login'}`)
+    if (role === 'teacher') {
+      this.props.history.push('/teacher')
     }
   }
 

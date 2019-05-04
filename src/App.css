@@ -368,3 +368,21 @@ textarea {
     color: #000;
     padding: 0.2em 0;
 }
+
+.rc-select-focused .rc-select-selection {
+    border-color: #0284ff;
+    box-shadow: 0 0 2px rgba(2, 132, 255, 0.8);
+  }
+  
+  .rc-select-enabled .rc-select-selection:hover {
+    border-color: #0284ff;
+    box-shadow: 0 0 2px rgba(2, 132, 255, 0.8);
+  }
+  
+  .rc-select-enabled .rc-select-selection:active {
+    border-color: #0284ff;
+  }
+  
+  .rc-select-selection__placeholder {
+    color: #777;
+  }

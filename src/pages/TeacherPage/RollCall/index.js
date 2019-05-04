@@ -1,22 +1,29 @@
-import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
+import { format } from 'date-fns'
 import * as faceapi from 'face-api.js'
-import { getFaceDetectorOptions, isFaceDetectionModelLoaded, changeFaceDetector, TINY_FACE_DETECTOR } from './js/faceDetectionControls'
-import { drawDetections } from './js/drawing'
-import { recognizeFace } from '../../../redux/actions'
-import Button from '../../../components/Button'
+import DatePicker from 'react-datepicker'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import Select, { Option } from 'rc-select'
 
-import './index.css'
 import 'rc-select/assets/index.css'
+
+import { drawDetections } from './js/drawing'
+import { getFaceDetectorOptions, isFaceDetectionModelLoaded, changeFaceDetector, TINY_FACE_DETECTOR } from './js/faceDetectionControls'
+import { recognizeFace } from '../../../redux/actions'
+import { times } from '../constants'
+import Button from '../../../components/Button'
+
+import './index.css'
 
 class RollCall extends Component {
   constructor (props) {
     super(props)
     this.state = {
       studentId: '',
-      courseId: null
+      courseId: null,
+      timeId: null,
+      date: null
     }
     this.video = React.createRef()
     this.canvas = React.createRef()
@@ -117,22 +124,21 @@ class RollCall extends Component {
     context.drawImage(video, 0, 0, 360, 240)
   }
 
-  recognizeFace = () => {
-    this.takePicture()
-    const picture = this.picture.current
-    const dataurl = picture.toDataURL('image/jpeg', 1.0)
-    const { studentId, courseId } = this.state
-    const ids = {
-      studentId: Number(studentId),
-      courseId
-    }
-
-    this.props.dispatch(recognizeFace(dataurl, ids))
-  }
-
   onSelectChange = (_, option) => {
     this.setState({
       courseId: option.key
+    })
+  }
+
+  onTimeChange = (_, option) => {
+    this.setState({
+      timeId: option.key
+    })
+  }
+
+  handleCalendarSelect = date => {
+    this.setState({
+      date: date
     })
   }
 
@@ -142,9 +148,29 @@ class RollCall extends Component {
     })
   }
 
+  recognizeFace = () => {
+    this.takePicture()
+    const picture = this.picture.current
+    const dataurl = picture.toDataURL('image/jpeg', 1.0)
+    const { studentId, courseId, date, timeId } = this.state
+    const body = {
+      studentId,
+      courseId,
+      timeId,
+      date: format(date, 'yyyy-MM-dd')
+    }
+    this.props.dispatch(recognizeFace(dataurl, body)).then(code => {
+      if (code === 200) {
+        this.setState({
+          studentId: ''
+        })
+      }
+    })
+  }
+
   render () {
     const { courses = [] } = this.props
-    const { studentId, courseId } = this.state
+    const { studentId, courseId, date, timeId } = this.state
     return (<div className='RollCall'>
       <span className='RollCall-title'>
         人脸自动录入
@@ -152,33 +178,57 @@ class RollCall extends Component {
       <span className='RollCall-subtitle'>
         请确保录入的人脸在下方录入区被识别以避免上传失败
       </span>
-      <Select
-        placeholder='开始前请选择相应课程'
-        className='RollCall-select'
-        style={{ width: 300 }}
-        animation='slide-up'
-        showSearch={false}
-        onChange={this.onSelectChange}
-      >
-        {
-          courses.map(item => {
-            const { co_id: coId, name } = item
-            return (
-              <Option key={coId} value={name}>{name}</Option>
-            )
-          })
-        }
-      </Select>
+      <div className='RollCall-selects'>
+        <Select
+          placeholder='请选择相应课程'
+          className='RollCall-select'
+          style={{ width: 300 }}
+          animation='slide-up'
+          showSearch={false}
+          onChange={this.onSelectChange}
+        >
+          {
+            courses.map(item => {
+              const { course_id: coId, name } = item
+              return (
+                <Option key={coId} value={name}>{name}</Option>
+              )
+            })
+          }
+        </Select>
+        <Select
+          placeholder='请选择课时'
+          className='RollCall-select'
+          style={{ width: 200 }}
+          animation='slide-up'
+          showSearch={false}
+          onChange={this.onTimeChange}
+        >
+          {
+            times.map(time => {
+              const { key, value } = time
+              return (
+                <Option key={key} value={value}>{value}</Option>
+              )
+            })
+          }
+        </Select>
+        <DatePicker
+          selected={date}
+          placeholderText='请选择日期'
+          onChange={this.handleCalendarSelect}
+        />
+      </div>
       <div className='RollCall-content'>
         <video className='RollCall-video' ref={this.video} onPlay={this.onPlay} autoPlay muted />
         <canvas className='RollCall-canvas' ref={this.canvas} width='480' height='320' />
       </div>
       <label className='RollCall-form'>
         <span className='RollCall-formName'>学号:</span>
-        <input className='RollCall-formInput' type='text' value={studentId} onChange={this.handleIdChange} />
+        <input className='RollCall-formInput' placeholder='请输入学号' type='text' value={studentId} onChange={this.handleIdChange} />
         <canvas className='RollCall-picture' ref={this.picture} width='360' height='240' />
       </label>
-      <Button className='RollCall-button' handleClick={this.recognizeFace} value='拍照' disabled={!studentId || !courseId} />
+      <Button className='RollCall-button' handleClick={this.recognizeFace} value='拍照' disabled={!studentId || !courseId || !date || !timeId} />
     </div>)
   }
 }

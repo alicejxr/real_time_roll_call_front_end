@@ -8,7 +8,9 @@ import './index.css'
 
 class Modal extends Component {
   componentDidMount () {
-    this.props.componentDidMount()
+    if (this.props.componentDidMount) {
+      this.props.componentDidMount()
+    }
   }
 
   handleCloseModal = () => {

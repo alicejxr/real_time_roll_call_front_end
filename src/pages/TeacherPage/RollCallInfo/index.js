@@ -1,30 +1,57 @@
-import React, { Component } from 'react'
+/* eslint-disable camelcase */
 import { connect } from 'react-redux'
-import cx from 'classnames'
-import PropTypes from 'prop-types'
-import Select, { Option } from 'rc-select'
-import { Calendar } from 'react-date-range'
-import zhCN from 'react-date-range/src/locale/zh-CN'
+import { withRouter } from 'react-router-dom'
 import { format } from 'date-fns'
+import DatePicker from 'react-datepicker'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import Select, { Option } from 'rc-select'
 import Table from 'rc-table'
+import { stringify, parseUrl } from 'query-string'
+
+import { getRecords } from '../../../redux/actions'
+import { times, timesMap } from '../constants'
+import Modal from '../../../components/Modal'
 import Button from '../../../components/Button'
 
-import 'react-date-range/dist/styles.css' // main style file
-import 'react-date-range/dist/theme/default.css' // theme css file
-import 'rc-table/assets/index.css'
 import './index.css'
-
-function formatDateDisplay (date, defaultText) {
-  if (!date) return defaultText
-  return format(date, 'YYYY-MM-DD')
-}
 
 class RollCallInfoPage extends Component {
   state = {
-    date: null,
-    isSelect: true,
-    courseId: 0,
-    classId: 0
+    date: undefined,
+    timeId: undefined,
+    courseId: undefined,
+    classId: '',
+    shouldShowModal: false,
+    modalUrl: undefined
+  }
+
+  componentDidMount () {
+    const {
+      query: {
+        teacher_id,
+        course_id,
+        date,
+        class_id,
+        time_id
+      }
+    } = parseUrl(window.location.href)
+    if (window.location.search) {
+      const params = {
+        teacher_id: Number(teacher_id),
+        course_id: Number(course_id),
+        date: format(new Date(date), 'yyyy-MM-dd'),
+        class_id: Number(class_id),
+        time_id: Number(time_id)
+      }
+      this.setState({
+        date: new Date(date),
+        timeId: time_id,
+        courseId: course_id,
+        classId: class_id
+      })
+      this.props.dispatch(getRecords(params))
+    }
   }
 
   onSelectionChange = (_, option) => {
@@ -33,17 +60,15 @@ class RollCallInfoPage extends Component {
     })
   }
 
-  showCalendar = () => {
+  onTimeChange = (_, option) => {
     this.setState({
-      isSelect: false
+      timeId: option.key
     })
   }
 
   handleCalendarSelect = date => {
-    console.log(date)
     this.setState({
-      date,
-      isSelect: true
+      date
     })
   }
 
@@ -54,81 +79,120 @@ class RollCallInfoPage extends Component {
   }
 
   getRollCallTable = () => {
-    const { courseId, date, classId } = this.state
-    const body = {
-      course_id: courseId,
-      date,
-      class_id: classId
+    const { courseId, date, classId, timeId } = this.state
+    const { id, history, dispatch } = this.props
+    const params = {
+      teacher_id: Number(id),
+      course_id: Number(courseId),
+      date: format(date, 'yyyy-MM-dd'),
+      class_id: Number(classId),
+      time_id: Number(timeId)
     }
-    console.log(body)
+    history.push(`/teacher/rollcall-info?${stringify({ ...params, date })}`)
+    dispatch(getRecords(params))
+  }
+
+  closeModal = () => {
+    this.setState({
+      shouldShowModal: false
+    })
+  }
+
+  showModal = value => {
+    this.setState({
+      modalUrl: value,
+      shouldShowModal: true
+    })
   }
 
   render () {
-    const { courses = [] } = this.props
-    const { date, isSelect } = this.state
+    const { courses = [], records = [], total = 0, realCount = 0, uncallStudents } = this.props
+    const { date, classId, timeId, courseId, shouldShowModal, modalUrl } = this.state
     const columns = [{
-      title: '课程', dataIndex: 'course_id', key: 'course_id', width: 100
+      title: '课程',
+      dataIndex: 'course_id',
+      key: 'course_id',
+      render: value => {
+        const course = courses.filter(course => {
+          const { course_id: id } = course
+          if (id === value) {
+            return true
+          }
+        })
+        return course[0] && course[0].name
+      },
+      width: 100
     }, {
       title: '班级', dataIndex: 'class_id', key: 'class_id', width: 100
     }, {
       title: '学号', dataIndex: 'student_id', key: 'student_id', width: 200
     }, {
-      title: '姓名', dataIndex: 'student_name', key: 'student_name', width: 200
+      title: '姓名', dataIndex: 'name', key: 'name', width: 200
     }, {
-      title: '是否出勤',
-      dataIndex: 'on_call',
-      key: 'on_call',
-      render: (value, row, index) => {
-        return (
-          <span>
-            {
-              value ? '出勤' : '未出勤'
-            }
-          </span>
-        )
+      title: '录入时间',
+      dataIndex: 'date',
+      key: 'date',
+      render: value => {
+        return <div>
+          { value.split(' ')[0] }
+        </div>
       },
       width: 200
     }, {
-      title: '时间', dataIndex: 'date', key: 'date', width: 200
+      title: '录入课时',
+      dataIndex: 'time_id',
+      key: 'time_id',
+      render: value => {
+        return timesMap[value]
+      },
+      width: 200
     }, {
       title: '出勤照片',
       dataIndex: 'cur_face_url',
       key: 'cur_face_url',
-      render: (value, row, index) => {
+      render: value => {
         return (
-          <a href={value}>
+          <div onClick={() => this.showModal(value)}>
             点击查看图片
-          </a>
+          </div>
         )
       },
       width: 200
     }]
 
-    const data = [
-      { course_id: 1, class_id: 21522, student_id: 2152232, student_name: '贾欣蕊', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: false, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '1' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '2' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '3' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '4' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '5' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '6' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '7' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '8' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '9' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '10' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '11' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '12' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '13' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '14' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '15' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '16' },
-      { course_id: 2, class_id: 21522, student_id: 2152233, student_name: '许嵩', date: format(new Date(), 'YYYY-MM-DD HH:MM:SS'), on_call: true, cur_face_url: 'http://182.254.168.171/images/IMG_1216.jpeg', key: '17' }
+    const uncallColumns = [
+      {
+        title: '学号',
+        dataIndex: 'student_id',
+        key: 'student_id'
+      }, {
+        title: '姓名', dataIndex: 'name', key: 'name'
+      }, {
+        title: '班级', dataIndex: 'class_id', key: 'class_id'
+      }
     ]
+
+    let coursesMap = {}
+    courses.forEach(item => {
+      const { course_id, name } = item
+      coursesMap = {
+        ...coursesMap,
+        [course_id]: name
+      }
+    })
+
     return (<div className='RollCallInfo'>
+      {
+        shouldShowModal && <Modal closeModal={this.closeModal} className='RollCallInfo-modal'>
+          <img src={modalUrl} alt='face-img' />
+        </Modal>
+      }
       <span className='RollCallInfo-title'>
         课堂点名信息
       </span>
       <div className='RollCallInfo-Table-header'>
         <Select
+          value={coursesMap[courseId]}
           placeholder='请选择相应课程'
           className='RollCallInfo-select'
           style={{ width: 200 }}
@@ -138,51 +202,83 @@ class RollCallInfoPage extends Component {
         >
           {
             courses.map(item => {
-              const { co_id: coId, name } = item
+              const { course_id: coId, name } = item
               return (
                 <Option key={coId} value={name}>{name}</Option>
               )
             })
           }
         </Select>
-        <div className='RollCallInfo-Calendar-wrapper'>
-          <input
-            className='RollCallInfo-Calendar-input'
-            type='text'
-            readOnly
-            placeholder='请选择日期'
-            value={formatDateDisplay(date)}
-            onClick={this.showCalendar}
-          />
-          <Calendar
-            className={cx('RollCallInfo-Calendar', { 'RollCallInfo-Calendar--hidden': isSelect })}
-            locale={zhCN}
-            date={date}
-            onChange={this.handleCalendarSelect}
-          />
-        </div>
+        <Select
+          value={timesMap[timeId]}
+          placeholder='请选择课时'
+          className='RollCallInfo-select'
+          style={{ width: 200 }}
+          animation='slide-up'
+          showSearch={false}
+          onChange={this.onTimeChange}
+        >
+          {
+            times.map(time => {
+              const { key, value } = time
+              return (
+                <Option key={key} value={value}>{value}</Option>
+              )
+            })
+          }
+        </Select>
+        <DatePicker
+          placeholderText='请选择对应时间'
+          selected={date}
+          onChange={this.handleCalendarSelect}
+        />
         <input
+          value={classId}
           className='RollCallInfo-Class-input'
-          type='number'
+          type='text'
           placeholder='请输入班级'
           onChange={this.handleClassChange}
         />
-        <Button value='确认' className='RollCallInfo-button' handleClick={this.getRollCallTable} />
+        <Button value='确认' className='RollCallInfo-button' handleClick={this.getRollCallTable} disabled={!classId || !courseId || !timeId || !date} />
       </div>
-      <Table columns={columns} data={data} className='RollCallInfo-table' />
+      <Table
+        title={() => { return '考勤名单' }}
+        footer={() => { return `全班共 ${total} 人,实到 ${realCount} 人` }}
+        columns={columns}
+        data={records}
+        className='RollCallInfo-table'
+      />
+      {
+        Boolean(total - realCount) &&
+        <Table
+          title={() => { return '未考勤名单' }}
+          footer={() => { return `${total - realCount} 人缺勤，有记录 ${uncallStudents.length} 人` }}
+          columns={uncallColumns}
+          data={uncallStudents}
+          className='RollCallInfo-table'
+        />
+      }
     </div>)
   }
 }
 
 RollCallInfoPage.propTypes = {
-  courses: PropTypes.array
+  courses: PropTypes.array,
+  records: PropTypes.array,
+  id: PropTypes.string,
+  total: PropTypes.any,
+  realCount: PropTypes.any,
+  uncallStudents: PropTypes.array,
+  dispatch: PropTypes.func,
+  history: PropTypes.object
 }
 
 const mapStateToProps = state => {
-  const { user } = state
+  const { user, rollCall } = state
   return {
-    ...user
+    ...user,
+    ...rollCall
   }
 }
 
-export default connect(mapStateToProps)(RollCallInfoPage)
+export default withRouter(connect(mapStateToProps)(RollCallInfoPage))

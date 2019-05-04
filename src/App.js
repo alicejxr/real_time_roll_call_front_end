@@ -10,7 +10,15 @@ import LoginePage from './pages/LoginPage'
 import StudentPage from './pages/StudentPage'
 import TeacherPage from './pages/TeacherPage'
 
+import { registerLocale, setDefaultLocale } from 'react-datepicker'
+import zhCN from 'date-fns/locale/zh-CN'
+
+import 'react-datepicker/dist/react-datepicker.css'
+import 'rc-table/assets/index.css'
 import './App.css'
+
+registerLocale('zhCN', zhCN)
+setDefaultLocale('zhCN')
 
 const root = 'http://127.0.0.1:7001'
 

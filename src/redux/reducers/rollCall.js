@@ -1,14 +1,10 @@
-import { LOAD_STUDENTS } from '../actionTypes'
+import { SAVE_RECORD } from '../actionTypes'
 
-const initialState = {
-  name: 'pororo'
-}
-
-export default function (state = initialState, action) {
+export default function (state = { records: [] }, action) {
   switch (action.type) {
-    case LOAD_STUDENTS: {
+    case SAVE_RECORD: {
       return {
-        ...state
+        ...action.payload
       }
     }
     default:
